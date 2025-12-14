@@ -1,5 +1,5 @@
 ⭐ THE ARCHITECTURE OVERVIEW
-
+```
 ┌───────────────────────────┐
 │       UI Components        │  ← DOM + CSS
 └───────────────┬───────────┘
@@ -19,3 +19,4 @@
 ┌───────────────▼────────────┐
 │      Storage Adapter        │  ← localStorage / IndexedDB
 └─────────────────────────────┘
+```
