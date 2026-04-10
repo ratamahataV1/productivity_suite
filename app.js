@@ -12,10 +12,10 @@ const user = {
 }
 
 function updatePreferences(user, newPreferences){
-      //shallow copy
-    const updated = {
-        ...user,
-        preferences: { ...user.preferences, ...newPreferences }
+      
+    const updated = {      
+        ...user,        //shallow copy
+        preferences: { ...user.preferences, ...newPreferences } //merge
 }
     return updated;
 }
