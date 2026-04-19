@@ -1,3 +1,4 @@
+/*
 //UserProfile module
 const user = {
     id:1,
@@ -89,3 +90,63 @@ console.log(filterTasks(tasks, null));
 console.log(getTaskStats(tasks));
 console.log(findTaskByTitle(tasks, "Learn JS"));
 console.log(findTaskByTitle(null, "Learn JS"));
+*/
+
+// STATE
+let userState = {
+    name:"",
+    tasks: []
+};
+
+//SET NAME
+function setName(newName){
+    const newState = {
+        name: newName,
+        tasks: userState.tasks
+    };
+    return newState;
+}
+
+//ADD TASK
+function addTask(task){
+    const newState = {
+        name: userState.name,
+        tasks: [
+            ...userState.tasks, task
+        ]
+    };
+    return newState;
+}
+//TESTING 
+userState = setName("Doe");
+console.log(userState);
+
+userState = addTask("learn Maths");
+console.log(userState);
+userState = addTask("Gym");
+console.log(userState);
+
+
+//FILTER TASKS
+const tasks = [
+  { title: "Learn JS", done: true },
+  { title: "Gym", done: false },
+  { title: "", done: false }
+];
+
+function filterTasks(tasks) {
+  const result = [];
+
+  for (let i = 0; i < tasks.length; i++) {
+    const task = tasks[i];
+
+    if (task.title && task.done === false) {
+      result.push(task);
+    }
+  }
+
+  return result;
+}
+//TESTING 
+const filtered = filterTasks(tasks);
+console.log(filtered);
