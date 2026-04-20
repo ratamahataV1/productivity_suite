@@ -150,3 +150,25 @@ function filterTasks(tasks) {
 //TESTING 
 const filtered = filterTasks(tasks);
 console.log(filtered);
+
+
+//TASK COUNTER
+function createTaskCounter(){
+    let count = 0;
+    return {
+        add: function(){
+            count ++;
+            return count;
+        },
+        reset: function(){
+            count = 0;
+            return count;
+        }
+    };
+}
+
+const taskCounter = createTaskCounter();
+console.log(taskCounter.add());
+console.log(taskCounter.add());
+console.log(taskCounter.reset());
+console.log(taskCounter.add());
