@@ -118,13 +118,13 @@ function addTask(task){
     return newState;
 }
 //TESTING 
-userState = setName("Doe");
-console.log(userState);
+// userState = setName("Doe");
+// console.log(userState);
 
-userState = addTask("learn Maths");
-console.log(userState);
-userState = addTask("Gym");
-console.log(userState);
+// userState = addTask("learn Maths");
+// console.log(userState);
+// userState = addTask("Gym");
+// console.log(userState);
 
 
 //FILTER TASKS
@@ -148,8 +148,8 @@ function filterTasks(tasks) {
   return result;
 }
 //TESTING 
-const filtered = filterTasks(tasks);
-console.log(filtered);
+// const filtered = filterTasks(tasks);
+// console.log(filtered);
 
 
 //TASK COUNTER
@@ -168,11 +168,11 @@ function createTaskCounter(){
 }
 
 //TESTING 
-const taskCounter = createTaskCounter();
-console.log(taskCounter.add());
-console.log(taskCounter.add());
-console.log(taskCounter.reset());
-console.log(taskCounter.add());
+// const taskCounter = createTaskCounter();
+// console.log(taskCounter.add());
+// console.log(taskCounter.add());
+// console.log(taskCounter.reset());
+// console.log(taskCounter.add());
 
 //Task State Updater
 const appState = {
@@ -234,11 +234,58 @@ function renameUser(state, newName) {
 }
 
 // TESTING
-const state1 = addTask(appState, "React");
-console.log(state1);
+// const state1 = addTask(appState, "React");
+// console.log(state1);
 
-const state2 = toggleTask(state1, 1);
-console.log(state2);
+// const state2 = toggleTask(state1, 1);
+// console.log(state2);
 
-const state3 = renameUser(state2, "John");
-console.log(state3);
+// const state3 = renameUser(state2, "John");
+// console.log(state3);
+
+const addBtn = document.querySelector("#addBtn");
+const taskInput = document.querySelector("#taskInput");
+const list = document.querySelector("#taskList");
+
+// STATE
+let state = {
+  tasks: []
+};
+
+// RENDER FUNCTION
+function render() {
+  // καθάρισε το UI
+  list.innerHTML = "";
+
+  // φτιάξε ξανά τα tasks από το state
+  for (let i = 0; i < state.tasks.length; i++) {
+    const task = state.tasks[i];
+
+    const li = document.createElement("li");
+    li.textContent = task;
+
+    // delete on click
+    li.addEventListener("click", function() {
+      state.tasks.splice(i, 1); // αφαιρεί από state
+      render(); // ξαναφτιάχνει UI
+    });
+
+    list.appendChild(li);
+  }
+}
+
+// ADD BUTTON
+addBtn.addEventListener("click", function() {
+  const value = taskInput.value;
+
+  if (!value) return;   //empty value
+
+  // βάζουμε στο STATE
+  state.tasks.push(value);
+
+  // ξαναζωγραφίζουμε UI
+  render();
+
+  // καθαρίζουμε input
+  taskInput.value = "";
+});
