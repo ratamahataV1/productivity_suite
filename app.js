@@ -167,8 +167,78 @@ function createTaskCounter(){
     };
 }
 
+//TESTING 
 const taskCounter = createTaskCounter();
 console.log(taskCounter.add());
 console.log(taskCounter.add());
 console.log(taskCounter.reset());
 console.log(taskCounter.add());
+
+//Task State Updater
+const appState = {
+  user: {
+    name: "Doe"
+  },
+  tasks: [
+    { id: 1, title: "JS", done: false },
+    { id: 2, title: "Gym", done: true }
+  ]
+};
+
+function addTask(state, title) {
+  const newTask = {
+    id: 3,
+    title: title,
+    done: false
+  };
+
+  return {
+    ...state,
+    tasks: [
+      ...state.tasks,
+      newTask
+    ]
+  };
+}
+
+function toggleTask(state, taskId) {
+  const updatedTasks = [];
+
+  for (let i = 0; i < state.tasks.length; i++) {
+    const task = state.tasks[i];
+
+    if (task.id === taskId) {
+        updatedTasks.push({
+        ...task,
+        done: !task.done
+    });
+    } else {
+        updatedTasks.push(task);
+}
+  }
+
+    return {
+        ...state,
+        tasks: updatedTasks
+    };
+}
+
+function renameUser(state, newName) {
+  return {
+    ...state,
+    user: {
+      ...state.user,
+      name: newName
+    }
+  };
+}
+
+// TESTING
+const state1 = addTask(appState, "React");
+console.log(state1);
+
+const state2 = toggleTask(state1, 1);
+console.log(state2);
+
+const state3 = renameUser(state2, "John");
+console.log(state3);
