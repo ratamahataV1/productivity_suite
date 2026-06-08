@@ -1,249 +1,7 @@
-/*
-//UserProfile module
-const user = {
-    id:1,
-    username: "admin",
-    email: "admin@test.com",
-    isPremium: true,
-    createdAt: "10/4/26",
-    preferences: {
-        theme: "dark",
-        language: "en"
-    }
-}
-
-function updatePreferences(user, newPreferences){
-      
-    const updated = {      
-        ...user,        //shallow copy
-        preferences: { ...user.preferences, ...newPreferences } //merge
-}
-    return updated;
-}
-
-function getUserSummary(user){
-    if(!user.username) return null;
-    return `${user.username} | ${user.isPremium ? "Premium" : "Free"} | Theme: ${user.preferences.theme}`;
-}
-
-//TaskFilter module
-const tasks = [
-    { title: "Buy groceries", done: true },
-    { title: "Learn JS", done: false },
-    { title: "Exercise", done: true },
-    { title: "Read book", done: false }
-];
-
-function filterTasks(tasks, status){
-    const filterStatus = status ?? "all";
-    let result = [];
-
- if(filterStatus === "completed"){
-        for(let i = 0; i < tasks.length; i++){
-            if(tasks[i].done === true){
-                result.push(tasks[i]);
-            }
-        }
-        return result;
-    }
-    if(filterStatus === "pending"){
-        for(let i = 0; i<tasks.length; i++){
-            if(tasks[i].done === false){
-                result.push(tasks[i]);
-            }
-        }
-        return result;
-    }
-    return tasks;
-}
-
-function getTaskStats(tasks){
-    let completed = 0;
-
-    for(let i = 0; i < tasks.length; i++){
-        if(tasks[i].done === true) completed++;
-    }
-
-    return {
-        total: tasks.length,
-        completed: completed,
-        pending: tasks.length - completed,
-        completionRate: `${Math.round(completed/tasks.length * 100)}%`
-    }
-}
-
-function findTaskByTitle(tasks, title){
-    if(tasks === null) return null;  // safety check
-
-    for(let i = 0; i < tasks.length; i++){
-        if(tasks[i].title === title){
-            return tasks[i];
-        }
-    }
-    return null;
-}
-
-// Tests
-console.log(filterTasks(tasks, "completed"));
-console.log(filterTasks(tasks, "pending"));
-console.log(filterTasks(tasks, null));
-console.log(getTaskStats(tasks));
-console.log(findTaskByTitle(tasks, "Learn JS"));
-console.log(findTaskByTitle(null, "Learn JS"));
-*/
-
-// STATE
-let userState = {
-    name:"",
-    tasks: []
-};
-
-//SET NAME
-function setName(newName){
-    const newState = {
-        name: newName,
-        tasks: userState.tasks
-    };
-    return newState;
-}
-
-//ADD TASK
-function addTask(task){
-    const newState = {
-        name: userState.name,
-        tasks: [
-            ...userState.tasks, task
-        ]
-    };
-    return newState;
-}
-//TESTING 
-// userState = setName("Doe");
-// console.log(userState);
-
-// userState = addTask("learn Maths");
-// console.log(userState);
-// userState = addTask("Gym");
-// console.log(userState);
-
-
-//FILTER TASKS
-const tasks = [
-  { title: "Learn JS", done: true },
-  { title: "Gym", done: false },
-  { title: "", done: false }
-];
-
-function filterTasks(tasks) {
-  const result = [];
-
-  for (let i = 0; i < tasks.length; i++) {
-    const task = tasks[i];
-
-    if (task.title && task.done === false) {
-      result.push(task);
-    }
-  }
-
-  return result;
-}
-//TESTING 
-// const filtered = filterTasks(tasks);
-// console.log(filtered);
-
-
-//TASK COUNTER
-function createTaskCounter(){
-    let count = 0;
-    return {
-        add: function(){
-            count ++;
-            return count;
-        },
-        reset: function(){
-            count = 0;
-            return count;
-        }
-    };
-}
-
-//TESTING 
-// const taskCounter = createTaskCounter();
-// console.log(taskCounter.add());
-// console.log(taskCounter.add());
-// console.log(taskCounter.reset());
-// console.log(taskCounter.add());
-
-//Task State Updater
-const appState = {
-  user: {
-    name: "Doe"
-  },
-  tasks: [
-    { id: 1, title: "JS", done: false },
-    { id: 2, title: "Gym", done: true }
-  ]
-};
-
-function addTask(state, title) {
-  const newTask = {
-    id: 3,
-    title: title,
-    done: false
-  };
-
-  return {
-    ...state,
-    tasks: [
-      ...state.tasks,
-      newTask
-    ]
-  };
-}
-
-function toggleTask(state, taskId) {
-  const updatedTasks = [];
-
-  for (let i = 0; i < state.tasks.length; i++) {
-    const task = state.tasks[i];
-
-    if (task.id === taskId) {
-        updatedTasks.push({
-        ...task,
-        done: !task.done
-    });
-    } else {
-        updatedTasks.push(task);
-}
-  }
-
-    return {
-        ...state,
-        tasks: updatedTasks
-    };
-}
-
-function renameUser(state, newName) {
-  return {
-    ...state,
-    user: {
-      ...state.user,
-      name: newName
-    }
-  };
-}
-
-// TESTING
-// const state1 = addTask(appState, "React");
-// console.log(state1);
-
-// const state2 = toggleTask(state1, 1);
-// console.log(state2);
-
-// const state3 = renameUser(state2, "John");
-// console.log(state3);
-
+// ===============================
 // SELECTORS
+// ===============================
+
 const addBtn = document.querySelector("#addBtn");
 const taskInput = document.querySelector("#taskInput");
 const list = document.querySelector("#taskList");
@@ -254,25 +12,58 @@ const completedBtn = document.querySelector("#completedBtn");
 
 const taskCounter = document.querySelector("#taskCounter");
 
+
+// ===============================
 // STATE
+// ===============================
+
 let state = {
   tasks: [],
   filter: "all"
 };
 
+
+// ===============================
+// SAVE TASKS TO LOCAL STORAGE
+// ===============================
+
+function saveTasks() {
+  localStorage.setItem(
+    "tasks",
+    JSON.stringify(state.tasks)
+  );
+}
+
+
+// ===============================
+// LOAD TASKS FROM LOCAL STORAGE
+// ===============================
+
+function loadTasks() {
+  const savedTasks = localStorage.getItem("tasks");
+
+  if (savedTasks) {
+    state.tasks = JSON.parse(savedTasks);
+  }
+}
+
+
+// ===============================
 // RENDER FUNCTION
+// ===============================
+
 function render() {
   // καθάρισε το UI
   list.innerHTML = "";
 
-  //COUNTER LOGIC
+  // COUNTER LOGIC
   let completed = 0;
 
   // loop στα tasks
   for (let i = 0; i < state.tasks.length; i++) {
     const task = state.tasks[i];
 
-    //COUNTER LOGIC
+    // COUNTER LOGIC
     if (task.done) {
       completed++;
     }
@@ -290,7 +81,6 @@ function render() {
 
     // EDIT MODE
     if (task.editing) {
-
       // CREATE INPUT
       const editInput = document.createElement("input");
 
@@ -304,14 +94,15 @@ function render() {
 
       // SAVE ON ENTER
       editInput.addEventListener("keydown", function(event) {
-
         if (event.key === "Enter") {
-
           // update title
           task.title = editInput.value;
 
           // exit edit mode
           task.editing = false;
+
+          // save changes
+          saveTasks();
 
           // rerender UI
           render();
@@ -322,7 +113,6 @@ function render() {
       li.appendChild(editInput);
 
     } else {
-
       // NORMAL MODE
       li.textContent = task.title;
     }
@@ -334,7 +124,6 @@ function render() {
 
     // DOUBLE CLICK → EDIT MODE
     li.addEventListener("dblclick", function(event) {
-
       // stop bubbling
       event.stopPropagation();
 
@@ -352,12 +141,14 @@ function render() {
 
     // DELETE EVENT
     deleteBtn.addEventListener("click", function(event) {
-
       // stop bubbling
       event.stopPropagation();
 
       // remove task from state
       state.tasks.splice(i, 1);
+
+      // save changes
+      saveTasks();
 
       // rerender UI
       render();
@@ -369,16 +160,21 @@ function render() {
     // ADD LI TO LIST
     list.appendChild(li);
   }
-  //COUNTER LOGIC
+
+  // COUNTER LOGIC
   const active = state.tasks.length - completed;
-  //COUNTER LOGIC //UPDATE UI
+
+  // COUNTER LOGIC - UPDATE UI
   taskCounter.textContent =
-  `All: ${state.tasks.length} | Active: ${active} | Completed: ${completed}`;
+    `All: ${state.tasks.length} | Active: ${active} | Completed: ${completed}`;
 }
 
-// EVENT DELEGATION - TOGGLE TASK
-list.addEventListener("click", function(event) {
 
+// ===============================
+// EVENT DELEGATION - TOGGLE TASK
+// ===============================
+
+list.addEventListener("click", function(event) {
   // get clicked li index
   const index = event.target.dataset.index;
 
@@ -388,13 +184,19 @@ list.addEventListener("click", function(event) {
   // toggle done
   state.tasks[index].done = !state.tasks[index].done;
 
+  // save changes
+  saveTasks();
+
   // rerender UI
   render();
 });
 
-// ADD BUTTON EVENT
-addBtn.addEventListener("click", function() {
 
+// ===============================
+// ADD BUTTON EVENT
+// ===============================
+
+addBtn.addEventListener("click", function() {
   // get input value
   const value = taskInput.value;
 
@@ -408,6 +210,9 @@ addBtn.addEventListener("click", function() {
     editing: false
   });
 
+  // save changes
+  saveTasks();
+
   // rerender UI
   render();
 
@@ -415,11 +220,13 @@ addBtn.addEventListener("click", function() {
   taskInput.value = "";
 });
 
+
+// ===============================
 // FILTER BUTTONS
+// ===============================
 
 // ALL
 allBtn.addEventListener("click", function() {
-
   state.filter = "all";
 
   render();
@@ -427,7 +234,6 @@ allBtn.addEventListener("click", function() {
 
 // ACTIVE
 activeBtn.addEventListener("click", function() {
-
   state.filter = "active";
 
   render();
@@ -435,8 +241,15 @@ activeBtn.addEventListener("click", function() {
 
 // COMPLETED
 completedBtn.addEventListener("click", function() {
-
   state.filter = "completed";
 
   render();
 });
+
+
+// ===============================
+// INIT APP
+// ===============================
+
+loadTasks();
+render();
