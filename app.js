@@ -14,38 +14,84 @@ const taskCounter = document.querySelector("#taskCounter");
 
 
 // ===============================
-// STATE
+// TASK MANAGER CLASS
+// ===============================
+
+class TaskManager {
+
+  // INITIAL STATE
+  constructor() {
+    this.tasks = [];
+  }
+
+  // ADD TASK
+  addTask(title) {
+    this.tasks.push({
+      title: title,
+      done: false,
+      editing: false
+    });
+  }
+
+  // DELETE TASK
+  deleteTask(index) {
+    this.tasks.splice(index, 1);
+  }
+
+  // TOGGLE TASK DONE / NOT DONE
+  toggleTask(index) {
+    this.tasks[index].done = !this.tasks[index].done;
+  }
+
+  // START EDIT MODE
+  startEditing(index) {
+    this.tasks[index].editing = true;
+  }
+
+  // EDIT TASK TITLE
+  editTask(index, newTitle) {
+    this.tasks[index].title = newTitle;
+    this.tasks[index].editing = false;
+  }
+
+  // GET TASKS
+  getTasks() {
+    return this.tasks;
+  }
+
+  // SAVE TASKS TO LOCAL STORAGE
+  saveTasks() {
+    localStorage.setItem(
+      "tasks",
+      JSON.stringify(this.tasks)
+    );
+  }
+
+  // LOAD TASKS FROM LOCAL STORAGE
+  loadTasks() {
+    const savedTasks = localStorage.getItem("tasks");
+
+    if (savedTasks) {
+      this.tasks = JSON.parse(savedTasks);
+    }
+  }
+}
+
+
+// ===============================
+// CREATE TASK MANAGER INSTANCE
+// ===============================
+
+const taskManager = new TaskManager();
+
+
+// ===============================
+// UI STATE
 // ===============================
 
 let state = {
-  tasks: [],
   filter: "all"
 };
-
-
-// ===============================
-// SAVE TASKS TO LOCAL STORAGE
-// ===============================
-
-function saveTasks() {
-  localStorage.setItem(
-    "tasks",
-    JSON.stringify(state.tasks)
-  );
-}
-
-
-// ===============================
-// LOAD TASKS FROM LOCAL STORAGE
-// ===============================
-
-function loadTasks() {
-  const savedTasks = localStorage.getItem("tasks");
-
-  if (savedTasks) {
-    state.tasks = JSON.parse(savedTasks);
-  }
-}
 
 
 // ===============================
@@ -56,12 +102,15 @@ function render() {
   // καθάρισε το UI
   list.innerHTML = "";
 
+  // get tasks from TaskManager
+  const tasks = taskManager.getTasks();
+
   // COUNTER LOGIC
   let completed = 0;
 
   // loop στα tasks
-  for (let i = 0; i < state.tasks.length; i++) {
-    const task = state.tasks[i];
+  for (let i = 0; i < tasks.length; i++) {
+    const task = tasks[i];
 
     // COUNTER LOGIC
     if (task.done) {
@@ -95,14 +144,11 @@ function render() {
       // SAVE ON ENTER
       editInput.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-          // update title
-          task.title = editInput.value;
-
-          // exit edit mode
-          task.editing = false;
+          // update title through TaskManager
+          taskManager.editTask(i, editInput.value);
 
           // save changes
-          saveTasks();
+          taskManager.saveTasks();
 
           // rerender UI
           render();
@@ -127,8 +173,8 @@ function render() {
       // stop bubbling
       event.stopPropagation();
 
-      // activate edit mode
-      task.editing = true;
+      // activate edit mode through TaskManager
+      taskManager.startEditing(i);
 
       // rerender UI
       render();
@@ -144,11 +190,11 @@ function render() {
       // stop bubbling
       event.stopPropagation();
 
-      // remove task from state
-      state.tasks.splice(i, 1);
+      // delete task through TaskManager
+      taskManager.deleteTask(i);
 
       // save changes
-      saveTasks();
+      taskManager.saveTasks();
 
       // rerender UI
       render();
@@ -162,11 +208,11 @@ function render() {
   }
 
   // COUNTER LOGIC
-  const active = state.tasks.length - completed;
+  const active = tasks.length - completed;
 
   // COUNTER LOGIC - UPDATE UI
   taskCounter.textContent =
-    `All: ${state.tasks.length} | Active: ${active} | Completed: ${completed}`;
+    `All: ${tasks.length} | Active: ${active} | Completed: ${completed}`;
 }
 
 
@@ -181,11 +227,11 @@ list.addEventListener("click", function(event) {
   // if no index stop
   if (index === undefined) return;
 
-  // toggle done
-  state.tasks[index].done = !state.tasks[index].done;
+  // toggle done through TaskManager
+  taskManager.toggleTask(index);
 
   // save changes
-  saveTasks();
+  taskManager.saveTasks();
 
   // rerender UI
   render();
@@ -203,15 +249,11 @@ addBtn.addEventListener("click", function() {
   // empty validation
   if (!value) return;
 
-  // ADD TASK TO STATE
-  state.tasks.push({
-    title: value,
-    done: false,
-    editing: false
-  });
+  // add task through TaskManager
+  taskManager.addTask(value);
 
   // save changes
-  saveTasks();
+  taskManager.saveTasks();
 
   // rerender UI
   render();
@@ -251,5 +293,8 @@ completedBtn.addEventListener("click", function() {
 // INIT APP
 // ===============================
 
-loadTasks();
+// load saved tasks
+taskManager.loadTasks();
+
+// first render
 render();
